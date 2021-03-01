@@ -1,5 +1,7 @@
+SPIGOTAPI=../../Spigot/Spigot-API/target/spigot-api-1.16.5-R0.1-SNAPSHOT-shaded.jar 
+
 TestPlugin:
-	javac --class-path ../../Spigot/Spigot-API/target/spigot-api-1.16.4-R0.1-SNAPSHOT-shaded.jar org/wochang/plugins/TestPlugin.java
+	javac --class-path $(SPIGOTAPI) org/wochang/plugins/TestPlugin.java
 	jar cf TestPlugin.jar org/wochang/plugins/TestPlugin.class plugin.yml
 	cp TestPlugin.jar ..
 
