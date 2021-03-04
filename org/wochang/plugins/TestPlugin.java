@@ -5,6 +5,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.CommandExecutor;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -15,25 +16,31 @@ import org.bukkit.Location;
 
 public class TestPlugin extends JavaPlugin {
 
+    // track summoned mobs for "mkmob" and "nomob" cmds
     ArrayList<Entity> summoned_mobs = new ArrayList<Entity>();
-	
+
     // Fired when plugin is first enabled
     @Override
     public void onEnable() {
 	getLogger().info("onEnable has been invoked!");
+	getLogger().info("Hi Evan!");
 
-        // // Register our command "gift" (set an instance of your command class as executor)
-        // this.getCommand("gift").setExecutor(new CommandGift());
+        // // Register commands
+        // this.getCommand("gift").setExecutor(new MyCommand());
+        // this.getCommand("gohome").setExecutor(new MyCommand());
+        // this.getCommand("mkmob").setExecutor(new MyCommand());
+        // this.getCommand("nomob").setExecutor(new MyCommand());
     }
     // Fired when plugin is disabled
     @Override
     public void onDisable() {
 	getLogger().info("onDisable has been invoked!");
     }
-// }
+    //}
 
-// public class CommandGift implements CommandExecutor {
+    //class MyCommand implements CommandExecutor {
 
+	
     // This method is called, when somebody uses our command
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
@@ -70,12 +77,16 @@ public class TestPlugin extends JavaPlugin {
 		// Create a new ItemStack (type: brick)
 		ItemStack pa = new ItemStack(Material.DIAMOND_PICKAXE);
 		ItemStack sw = new ItemStack(Material.DIAMOND_SWORD);
-
+		ItemStack ns = new ItemStack(Material.NETHER_STAR);
+ 		ItemStack obs = new ItemStack(Material.OBSIDIAN,10);
+		ItemStack gss = new ItemStack(Material.GLOWSTONE,20);
+		ItemStack gds = new ItemStack(Material.GLOWSTONE_DUST,20);
+		
 		// // Set the amount of the ItemStack
 		// bricks.setAmount(20);
 		
 		// Give the player our items (comma-seperated list of all ItemStack)
-		gift_target.getInventory().addItem(diamond, pa, sw);
+		gift_target.getInventory().addItem(diamond, pa, sw, ns, obs, gss, gds);
 
 		String success_msg = player.getDisplayName() + " gave a gift to " + args[0];
 		getLogger().info(success_msg);
