@@ -1,7 +1,9 @@
 package org.wochang.plugins;
 
+import java.util.List;
 import java.util.Arrays;
 import java.util.ArrayList;
+import java.util.Collections;
 
 // needed by all cmds
 import org.bukkit.Bukkit;
@@ -11,6 +13,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.CommandExecutor;
 
 // needed by this cmd
+import org.bukkit.command.TabCompleter;
 import org.bukkit.World;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -21,7 +24,7 @@ import org.bukkit.entity.EntityType;
 // TODO: implement location
 
 // NOTE: mkmob and nomob cmds must have same obj as cmd executor in main plugin class
-public class MkMobCommand implements CommandExecutor {
+public class MkMobCommand implements CommandExecutor, TabCompleter {
     
     // track summoned mobs for "mkmob" and "nomob" cmds
     ArrayList<Entity> summoned_mobs = new ArrayList<Entity>();
@@ -123,5 +126,34 @@ public class MkMobCommand implements CommandExecutor {
 	
         // If the player (or console) uses our command correct, we can return true
         return true;
+    }
+
+    // This method is called, when somebody uses our command
+    // @Override
+    public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args) {
+	// Bukkit.getLogger().info("onTabComplete: " + label);
+	// Bukkit.getLogger().info("args: " + Arrays.toString(args));
+        if (!(sender instanceof Player)) {
+	    Bukkit.getLogger().info("onTabComplete: sender is not a Player");
+	    return null;
+	}
+
+	Player player = (Player) sender;
+
+	ArrayList<String> possibleArgs = new ArrayList<String>();
+
+	if (label.equals("mkmob")) {
+	    if (args.length == 1) {
+		for (EntityType t : EntityType.values()) {
+		    if (t.isAlive() && t.name().toLowerCase().startsWith(args[0].toLowerCase())) {
+			possibleArgs.add(t.name());
+		    }
+		}
+	    }
+
+	    Collections.sort(possibleArgs);
+	}
+
+	return possibleArgs;
     }
 }
