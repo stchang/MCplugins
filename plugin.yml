@@ -4,9 +4,13 @@ version: 1.0
 api-version: 1.16
 commands:
    gift:
-      description: A gift from Baba
+      description: Give gift to a player
       usage: /gift <playername>
       permission: testplugin.gift
+   heal:
+      description: Heal a player
+      usage: /heal <playername>
+      permission: testplugin.heal
    gohome:
       description: Teleport to your bed
       usage: /gohome

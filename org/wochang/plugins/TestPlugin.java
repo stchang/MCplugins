@@ -11,11 +11,13 @@ public class TestPlugin extends JavaPlugin {
 	getLogger().info("Hi Evan!");
 	getLogger().info("Hi Henry!");
 
-	MkMobCommand mkmobcmd = new MkMobCommand();
-	
         // Register commands
         this.getCommand("gift").setExecutor(new GiftCommand());
+        this.getCommand("heal").setExecutor(new HealCommand());
         this.getCommand("gohome").setExecutor(new GoHomeCommand());
+
+	MkMobCommand mkmobcmd = new MkMobCommand();
+	
         this.getCommand("mkmob").setExecutor(mkmobcmd);
         this.getCommand("nomob").setExecutor(mkmobcmd);
     }

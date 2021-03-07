@@ -2,6 +2,7 @@ SPIGOTAPI=../../Spigot/Spigot-API/target/spigot-api-1.16.5-R0.1-SNAPSHOT-shaded.
 
 TestPlugin:
 	javac --class-path .:$(SPIGOTAPI) org/wochang/plugins/GiftCommand.java
+	javac --class-path .:$(SPIGOTAPI) org/wochang/plugins/HealCommand.java
 	javac --class-path .:$(SPIGOTAPI) org/wochang/plugins/GoHomeCommand.java
 	javac --class-path .:$(SPIGOTAPI) org/wochang/plugins/MkMobCommand.java
 	javac --class-path .:$(SPIGOTAPI) org/wochang/plugins/TestPlugin.java
