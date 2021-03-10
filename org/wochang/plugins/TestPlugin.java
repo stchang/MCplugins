@@ -20,6 +20,14 @@ public class TestPlugin extends JavaPlugin {
 	
         this.getCommand("mkmob").setExecutor(mkmobcmd);
         this.getCommand("nomob").setExecutor(mkmobcmd);
+
+	HenMode henMode = new HenMode();
+
+        this.getCommand("henmode").setExecutor(henMode);
+	
+	// Register Listeners
+	getServer().getPluginManager().registerEvents(henMode, this);
+
     }
     // Fired when plugin is disabled
     @Override

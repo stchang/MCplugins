@@ -31,13 +31,20 @@ public class GiftCommand implements CommandExecutor {
 	// gift cmd: requires 1 argument: target player
 	if (args.length != 1) {
 	    String wrong_args_errmsg = 
-		"gift: wrong number of arguments, given " + Arrays.toString(args) ;
+		"gift: wrong number of arguments, given " + Arrays.toString(args);
 	    Bukkit.getServer().broadcastMessage(wrong_args_errmsg);
 	    Bukkit.getLogger().info(wrong_args_errmsg);
 	    return false;
 	}
-	
+
 	Player gift_target = Bukkit.getPlayer(args[0]);
+	if (gift_target == null) { // player doesnt exist
+	    String no_player_err = "gift: player doesn't exist: " + args[0];
+	    Bukkit.getServer().broadcastMessage(no_player_err);
+	    Bukkit.getLogger().info(no_player_err);
+	    return false;
+	}
+	    
 	
 	// Create a new ItemStack (type: diamond)
 	ItemStack diamond = new ItemStack(Material.DIAMOND);

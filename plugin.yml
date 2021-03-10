@@ -23,4 +23,7 @@ commands:
       description: Clear summoned mobs
       usage: /nomob
       permission: testplugin.nomob
-   
+   henmode:
+      description: Activate Hen Mode
+      usage: /henmode on/off playername
+      permission: testplugin.henmode
