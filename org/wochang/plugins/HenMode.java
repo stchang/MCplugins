@@ -6,8 +6,11 @@ import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Collections;
 
-// needed by all cmds
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.java.JavaPlugin;
+
+// needed by cmds
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.CommandExecutor;
@@ -16,56 +19,132 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.TabCompleter;
 
 // needed by listeners
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.event.Listener;
 import org.bukkit.event.EventHandler;
+
+// needed by this class
+import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.metadata.MetadataValue;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerBucketEmptyEvent;
 
 public class HenMode implements Listener, CommandExecutor, TabCompleter {
 
     private HashSet<Player> henModePlayers = new HashSet<Player>();
+
+    private JavaPlugin owningPlugin;
+
+    public HenMode(JavaPlugin p) {
+	owningPlugin = p;
+    }
+
+    @EventHandler
+    public void onPlayerJoin(PlayerJoinEvent event) {
+	event.setJoinMessage("Welcome to CreativeChangWorld, " + event.getPlayer().getName() + "!");
+    }
+
+    @EventHandler
+    public void onBlockPlace(BlockPlaceEvent event) {
+	Bukkit.getLogger().info(event.getPlayer().getName()
+				+ " put a "
+				+ event.getBlockPlaced().getType()
+				+ " block on a "
+				+ event.getBlockAgainst().getType()
+				+ " block, replacing a "
+				+ event.getBlockReplacedState().getType()
+				+ " block, while holding a "
+				+ event.getItemInHand().getType()
+				+ " block");
+	
+	Player p = event.getPlayer();
+
+	// check for henmode player
+	if (henModePlayers.contains(p)) {
+	    Bukkit.getLogger().info("henmode player trying to place: " +
+				    event.getBlockPlaced().getType().toString());
+
+	    // henmode player cannot place tnt
+	    if (event.getBlockPlaced().getType().equals(Material.TNT)) {
+		Bukkit.getLogger().info(event.getPlayer().getName()
+					+ " tried to place a TNT!");
+		Bukkit.getLogger().info("changing it to a wood!");
+		event.getBlockPlaced().setType(Material.ALLIUM);
+	    }
+	}
+
+	// mark all placed blocks with their owner
+	Block b = event.getBlockPlaced();
+	b.setMetadata("owner", new FixedMetadataValue(owningPlugin,p));
+    }
     
-     @EventHandler
-     public void onPlayerJoin(PlayerJoinEvent event) {
-         event.setJoinMessage("Welcome to CreativeChangWorld, " + event.getPlayer().getName() + "!");
-     }
+    
+    @EventHandler
+    public void onBlockBreak(BlockBreakEvent event) {
+	Player breaker = event.getPlayer();
+	
+	Bukkit.getLogger().info(breaker.getDisplayName()
+				+ " tried to break a "
+				+ event.getBlock().getType()
+				+ " block");
 
-     @EventHandler
-     public void onBlockPlace(BlockPlaceEvent event) {
-	 Bukkit.getLogger().info(event.getPlayer().getName()
-				 + " put a "
-				 + event.getBlockPlaced().getType()
-				 + " block on a "
-				 + event.getBlockAgainst().getType()
-				 + " block, replacing a "
-				 + event.getBlockReplacedState().getType()
-				 + " block, while holding a "
-				 + event.getItemInHand().getType()
-				 + " block");
+	Player owner = null;
+	if (event.getBlock().hasMetadata("owner")) {
+	    List<MetadataValue> vals = event.getBlock().getMetadata("owner");
+	    if (!vals.isEmpty()) {
+		owner = (Player) vals.get(0).value();
+		Bukkit.getLogger().info("block placed by " + owner.getDisplayName());
+	    } else {
+		Bukkit.getLogger().info("shouldn't get here: couldnt find owner");
+	    }
+	} else {
+	    Bukkit.getLogger().info("block is a world block");
+	}	    
 
-	 Player p = event.getPlayer();
+	// check for henmode player
+	if (henModePlayers.contains(breaker)) {
+	    Bukkit.getLogger().info("onBlockBreak: henmode player detected");
 
-	 if (henModePlayers.contains(p)) {
-	     Bukkit.getLogger().info("henmode player detected");
-	 } else {
-	     Bukkit.getLogger().info("not henmode player");
-	 }
-	 
-	 Bukkit.getLogger().info("henmode player trying to place: " +
-				 event.getBlockPlaced().getType().toString());
-	 if (henModePlayers.contains(p) &&
-	     //	     event.getBlockPlaced().getType().toString().equals("TNT")) {
-	     event.getBlockPlaced().getType().equals(Material.TNT)) {
-	     Bukkit.getLogger().info(event.getPlayer().getName()
-				     + " tried to place a TNT!");
-	     Bukkit.getLogger().info("changing it to a wood!");
-	     event.getBlockPlaced().setType(Material.ALLIUM);
-	 }
-     }
-
-        // This method is called, when somebody uses our command
+	    // henmode player cannot break other players blocks;
+	    // ok to break generated world blocks (owner = null)
+	    if ((owner != null) && !owner.equals(breaker)) {
+		event.setCancelled(true);
+		String break_err =
+		    "HenMode player " + breaker.getDisplayName()
+		    + " prevented from breaking "
+		    + event.getBlock().getType() +
+		    " block placed by " +
+		    owner.getDisplayName();
+		Bukkit.getServer().broadcastMessage(break_err);
+		Bukkit.getLogger().info(break_err);
+	    }
+	}
+    }
+    
+    @EventHandler
+    public void onPlayerBucketEmpty(PlayerBucketEmptyEvent event) {
+	Bukkit.getLogger().info(event.getPlayer().getName()
+				+ " tried to dump a "
+				+ event.getBucket());
+	
+	Player p = event.getPlayer();
+	if (henModePlayers.contains(p) &&
+	    event.getBucket().equals(Material.LAVA_BUCKET)) {
+	    event.setCancelled(true);
+	    
+	    p.getInventory().setItemInMainHand(new ItemStack(Material.RED_TULIP));
+	    String lava_err = "Stopped HenMode player " + p.getDisplayName()
+		+ " from dumping LAVA!";
+	    Bukkit.getServer().broadcastMessage(lava_err);
+	    Bukkit.getLogger().info(lava_err);
+	}
+    }
+    
+    // This method is called, when somebody uses our command
     // @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 	Bukkit.getLogger().info("HenMode onCommand: " + label);
@@ -74,7 +153,7 @@ public class HenMode implements Listener, CommandExecutor, TabCompleter {
 	    Bukkit.getLogger().info("HenMode onCommand: sender is not a Player");
 	    return false;
 	}
-
+	
 	Player player = (Player) sender;
 	Player henModePlayer = (Player) sender;
 	
