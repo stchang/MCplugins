@@ -39,6 +39,8 @@ public class HenMode implements Listener, CommandExecutor, TabCompleter {
 
     private JavaPlugin owningPlugin;
 
+    private Boolean DEBUG = false;
+    
     public HenMode(JavaPlugin p) {
 	owningPlugin = p;
     }
@@ -50,29 +52,33 @@ public class HenMode implements Listener, CommandExecutor, TabCompleter {
 
     @EventHandler
     public void onBlockPlace(BlockPlaceEvent event) {
-	Bukkit.getLogger().info(event.getPlayer().getName()
-				+ " put a "
-				+ event.getBlockPlaced().getType()
-				+ " block on a "
-				+ event.getBlockAgainst().getType()
-				+ " block, replacing a "
-				+ event.getBlockReplacedState().getType()
-				+ " block, while holding a "
-				+ event.getItemInHand().getType()
-				+ " block");
+	if (DEBUG) {
+	    Bukkit.getLogger().info(event.getPlayer().getName()
+				    + " put a "
+				    + event.getBlockPlaced().getType()
+				    + " block on a "
+				    + event.getBlockAgainst().getType()
+				    + " block, replacing a "
+				    + event.getBlockReplacedState().getType()
+				    + " block, while holding a "
+				    + event.getItemInHand().getType()
+				    + " block");
+	}
 	
 	Player p = event.getPlayer();
 
 	// check for henmode player
 	if (henModePlayers.contains(p)) {
-	    Bukkit.getLogger().info("henmode player trying to place: " +
-				    event.getBlockPlaced().getType().toString());
+	    if (DEBUG) {
+		Bukkit.getLogger().info("henmode player trying to place: " +
+					event.getBlockPlaced().getType().toString());
+	    }
 
 	    // henmode player cannot place tnt
 	    if (event.getBlockPlaced().getType().equals(Material.TNT)) {
 		Bukkit.getLogger().info(event.getPlayer().getName()
 					+ " tried to place a TNT!");
-		Bukkit.getLogger().info("changing it to a wood!");
+		Bukkit.getLogger().info("changed it to a flower!");
 		event.getBlockPlaced().setType(Material.ALLIUM);
 	    }
 	}
@@ -86,29 +92,38 @@ public class HenMode implements Listener, CommandExecutor, TabCompleter {
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
 	Player breaker = event.getPlayer();
-	
-	Bukkit.getLogger().info(breaker.getDisplayName()
-				+ " tried to break a "
-				+ event.getBlock().getType()
-				+ " block");
 
+	if (DEBUG) {
+	    Bukkit.getLogger().info(breaker.getDisplayName()
+				    + " tried to break a "
+				    + event.getBlock().getType()
+				    + " block");
+	}
+	
 	Player owner = null;
 	if (event.getBlock().hasMetadata("owner")) {
 	    List<MetadataValue> vals = event.getBlock().getMetadata("owner");
 	    if (!vals.isEmpty()) {
 		owner = (Player) vals.get(0).value();
-		Bukkit.getLogger().info("block placed by " + owner.getDisplayName());
+		if (DEBUG) {
+		    Bukkit.getLogger().info("onBlockBreak: block placed by " + owner.getDisplayName());
+		}
 	    } else {
-		Bukkit.getLogger().info("shouldn't get here: couldnt find owner");
+		Bukkit.getLogger().info("onBlockBreak: shouldn't get here: couldnt find owner");
 	    }
 	} else {
-	    Bukkit.getLogger().info("block is a world block");
+	    if (DEBUG) {
+		Bukkit.getLogger().info("block is a world block");
+	    }
 	}	    
 
 	// check for henmode player
 	if (henModePlayers.contains(breaker)) {
-	    Bukkit.getLogger().info("onBlockBreak: henmode player detected");
-
+	    if (DEBUG) {
+		Bukkit.getLogger().info("onBlockBreak: henmode player trying to break a "
+					+ event.getBlock().getType() + " block");
+	    }
+				    
 	    // henmode player cannot break other players blocks;
 	    // ok to break generated world blocks (owner = null)
 	    if ((owner != null) && !owner.equals(breaker)) {

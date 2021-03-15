@@ -54,7 +54,7 @@ public class MkMobCommand implements CommandExecutor, TabCompleter {
 	    
 	    if (args.length == 0) {
 		String fail_msg1 = "mkmob: didn't name a type of mob";
-		Bukkit.getLogger().info(fail_msg1);
+		//Bukkit.getLogger().info(fail_msg1);
 		Bukkit.getServer().broadcastMessage(fail_msg1);
 		return false;
 	    }
@@ -66,7 +66,7 @@ public class MkMobCommand implements CommandExecutor, TabCompleter {
 		String fail_msg =
 		    player.getDisplayName() +
 		    " tried to make a mob that doesn't exist: " + args[0];
-		Bukkit.getLogger().info(fail_msg);
+		//Bukkit.getLogger().info(fail_msg);
 		Bukkit.getServer().broadcastMessage(fail_msg);
 		return false;
 	    }
@@ -79,7 +79,7 @@ public class MkMobCommand implements CommandExecutor, TabCompleter {
 			    player.getDisplayName() +
 			    " tried to make too many " + mob_type_str.toLowerCase() +
 			    "s: must be < 256";
-			Bukkit.getLogger().info(fail_msg);
+			//Bukkit.getLogger().info(fail_msg);
 			Bukkit.getServer().broadcastMessage(fail_msg);
 			return false;
 		    }
@@ -87,7 +87,7 @@ public class MkMobCommand implements CommandExecutor, TabCompleter {
 		    String fail_msg =
 			player.getDisplayName() +
 			" gave a bad # of mobs: must be a number < 256";
-		    Bukkit.getLogger().info(fail_msg);
+		    //Bukkit.getLogger().info(fail_msg);
 		    Bukkit.getServer().broadcastMessage(fail_msg);
 		    return false;
 		}
@@ -110,7 +110,7 @@ public class MkMobCommand implements CommandExecutor, TabCompleter {
 	    String success_msg =
 		player.getDisplayName() +
 		" made " + num_mobs + " " + mob_type_str.toLowerCase() + "s";
-	    Bukkit.getLogger().info(success_msg);
+	    //Bukkit.getLogger().info(success_msg);
 	    Bukkit.getServer().broadcastMessage(success_msg);
 	} else if (label.equals("nomob")) {
 	    int num_mobs = summoned_mobs.size();
@@ -119,7 +119,7 @@ public class MkMobCommand implements CommandExecutor, TabCompleter {
 	    }
 	    String success_msg =
 		player.getDisplayName() + " cleared " + num_mobs + " mobs";
-	    Bukkit.getLogger().info(success_msg);
+	    //Bukkit.getLogger().info(success_msg);
 	    Bukkit.getServer().broadcastMessage(success_msg);
 	    summoned_mobs = new ArrayList<Entity>();
 	}
